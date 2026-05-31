@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: javaapi
+  namespace: emart
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: javaapi
+  template:
+    metadata:
+      labels:
+        app: javaapi
+    spec:
+      containers:
+      - name: javaapi
+        image: abroor/emart-javaapi:1.0
+        ports:
+        - containerPort: 9000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webapi
+  namespace: emart
+spec:
+  selector:
+    app: javaapi
+  ports:
+  - port: 9000
+    targetPort: 9000
