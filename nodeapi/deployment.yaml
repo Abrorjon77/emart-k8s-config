@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: nodeapi
-        image: abroor/emart-nodeapi:1.0   # ← your DockerHub image
+        image: abroor/emart-nodeapi:latest   # ← your DockerHub image
         ports:
         - containerPort: 5000
 ---

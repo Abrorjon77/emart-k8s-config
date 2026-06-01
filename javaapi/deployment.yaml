@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: javaapi
-        image: abroor/emart-javaapi:1.0
+        image: abroor/emart-javaapi:latest   # ← your DockerHub image
         ports:
         - containerPort: 9000
 ---
