@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: javaapi
-        image: abroor/emart-javaapi:db988240f3fca8863bf0b81a8d0dfb87c43dcca9
+        image: abroor/emart-javaapi:acd30e1f2fe0e32986e8a92028206fa5afa3b97d
         ports:
         - containerPort: 9000
 ---
