@@ -1,0 +1,22 @@
+cat > argocd/application.yaml << 'EOF'
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: emart-app
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Abrorjon77/emart-k8s-config
+    targetRevision: main
+    path: .
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: emart
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+EOF
