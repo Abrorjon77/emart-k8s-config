@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: nodeapi
-        image: abroor/emart-nodeapi:4e6399e34941f8fee1d03803001274e7d44725fb
+        image: abroor/emart-nodeapi:ad86ea90c9aff000599cc413c989f1b2843ee176
         ports:
         - containerPort: 5000
 ---
