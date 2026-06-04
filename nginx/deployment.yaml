@@ -25,16 +25,3 @@ spec:
       - name: nginx-config
         configMap:
           name: nginx-config
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: nginx
-  namespace: emart
-spec:
-  selector:
-    app: nginx
-  type: LoadBalancer        # ← EKS will create an AWS Load Balancer
-  ports:
-  - port: 80
-    targetPort: 80

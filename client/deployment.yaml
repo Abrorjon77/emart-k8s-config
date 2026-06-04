@@ -18,15 +18,3 @@ spec:
         image: abroor/emart-client:5eeb9aff8a330556b386f01e967e7ff4e0c37ead
         ports:
         - containerPort: 4200
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: client
-  namespace: emart
-spec:
-  selector:
-    app: client
-  ports:
-  - port: 4200
-    targetPort: 4200

@@ -18,15 +18,3 @@ spec:
         image: abroor/emart-javaapi:acd30e1f2fe0e32986e8a92028206fa5afa3b97d
         ports:
         - containerPort: 9000
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: webapi
-  namespace: emart
-spec:
-  selector:
-    app: javaapi
-  ports:
-  - port: 9000
-    targetPort: 9000
