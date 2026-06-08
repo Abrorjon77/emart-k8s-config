@@ -15,6 +15,6 @@ spec:
     spec:
       containers:
       - name: client
-        image: abroor/emart-client:5eeb9aff8a330556b386f01e967e7ff4e0c37ead
+        image: abroor/emart-client:7d33800e24a66f1604bf49bceea45b9b917befb5
         ports:
         - containerPort: 4200
