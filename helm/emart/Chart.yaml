@@ -1,0 +1,6 @@
+apiVersion: v2
+name: emart
+description: Helm chart for the emart application (client, javaapi, nodeapi, mongodb, mysql, nginx)
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

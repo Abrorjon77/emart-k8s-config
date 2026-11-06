@@ -1,0 +1,32 @@
+{{- with .Values.nodeapi }}
+{{- if .enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nodeapi
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    app: nodeapi
+    {{- include "emart.labels" $ | nindent 4 }}
+spec:
+  replicas: {{ .replicas }}
+  selector:
+    matchLabels:
+      app: nodeapi
+  template:
+    metadata:
+      labels:
+        app: nodeapi
+    spec:
+      containers:
+      - name: nodeapi
+        image: {{ include "emart.image" .image }}
+        imagePullPolicy: {{ .image.pullPolicy }}
+        ports:
+        - containerPort: {{ .containerPort }}
+        {{- with .resources }}
+        resources:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+{{- end }}
+{{- end }}

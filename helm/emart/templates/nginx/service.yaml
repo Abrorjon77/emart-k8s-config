@@ -1,0 +1,19 @@
+{{- with .Values.nginx }}
+{{- if .enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .service.name }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    app: nginx
+    {{- include "emart.labels" $ | nindent 4 }}
+spec:
+  selector:
+    app: nginx
+  type: {{ .service.type }}
+  ports:
+    - port: {{ .service.port }}
+      targetPort: {{ .containerPort }}
+{{- end }}
+{{- end }}

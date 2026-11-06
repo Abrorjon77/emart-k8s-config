@@ -1,0 +1,35 @@
+{{- with .Values.mongodb }}
+{{- if .enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .name }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    app: {{ .name }}
+    {{- include "emart.labels" $ | nindent 4 }}
+spec:
+  replicas: {{ .replicas }}
+  selector:
+    matchLabels:
+      app: {{ .name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .name }}
+    spec:
+      containers:
+      - name: mongo
+        image: {{ include "emart.image" .image }}
+        imagePullPolicy: {{ .image.pullPolicy }}
+        ports:
+        - containerPort: {{ .containerPort }}
+        env:
+        - name: MONGO_INITDB_DATABASE
+          value: {{ .database | quote }}
+        {{- with .resources }}
+        resources:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+{{- end }}
+{{- end }}

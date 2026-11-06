@@ -1,0 +1,19 @@
+{{- with .Values.mysql }}
+{{- if .enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .persistence.claimName }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    {{- include "emart.labels" $ | nindent 4 }}
+spec:
+  accessModes: [{{ .persistence.accessMode }}]
+  {{- with .persistence.storageClassName }}
+  storageClassName: {{ . }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .persistence.size }}
+{{- end }}
+{{- end }}

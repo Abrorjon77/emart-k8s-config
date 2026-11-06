@@ -1,0 +1,32 @@
+{{- with .Values.javaapi }}
+{{- if .enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: javaapi
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    app: javaapi
+    {{- include "emart.labels" $ | nindent 4 }}
+spec:
+  replicas: {{ .replicas }}
+  selector:
+    matchLabels:
+      app: javaapi
+  template:
+    metadata:
+      labels:
+        app: javaapi
+    spec:
+      containers:
+      - name: javaapi
+        image: {{ include "emart.image" .image }}
+        imagePullPolicy: {{ .image.pullPolicy }}
+        ports:
+        - containerPort: {{ .containerPort }}
+        {{- with .resources }}
+        resources:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+{{- end }}
+{{- end }}

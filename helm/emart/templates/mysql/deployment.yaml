@@ -1,0 +1,47 @@
+{{- with .Values.mysql }}
+{{- if .enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .name }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    app: {{ .name }}
+    {{- include "emart.labels" $ | nindent 4 }}
+spec:
+  replicas: {{ .replicas }}
+  selector:
+    matchLabels:
+      app: {{ .name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .name }}
+    spec:
+      containers:
+      - name: mysql
+        image: {{ include "emart.image" .image }}
+        imagePullPolicy: {{ .image.pullPolicy }}
+        ports:
+        - containerPort: {{ .containerPort }}
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .secret.name }}
+              key: password
+        - name: MYSQL_DATABASE
+          value: {{ .database | quote }}
+        volumeMounts:
+        - name: mysql-storage
+          mountPath: /var/lib/mysql
+        {{- with .resources }}
+        resources:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+      volumes:
+      - name: mysql-storage
+        persistentVolumeClaim:
+          claimName: {{ .persistence.claimName }}
+{{- end }}
+{{- end }}

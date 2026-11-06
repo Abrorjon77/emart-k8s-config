@@ -1,0 +1,34 @@
+{{- with .Values.nginx }}
+{{- if .enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .configMapName }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    {{- include "emart.labels" $ | nindent 4 }}
+data:
+  default.conf: |
+    upstream client {
+      server {{ $.Values.client.service.name }}:{{ $.Values.client.service.port }};
+    }
+    upstream api {
+      server {{ $.Values.nodeapi.service.name }}:{{ $.Values.nodeapi.service.port }};
+    }
+    upstream webapi {
+      server {{ $.Values.javaapi.service.name }}:{{ $.Values.javaapi.service.port }};
+    }
+    server {
+      listen {{ .containerPort }};
+      location / {
+        proxy_pass http://client;
+      }
+      location /api {
+        proxy_pass http://api;
+      }
+      location /webapi {
+        proxy_pass http://webapi;
+      }
+    }
+{{- end }}
+{{- end }}

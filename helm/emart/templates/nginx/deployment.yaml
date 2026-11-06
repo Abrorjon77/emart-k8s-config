@@ -1,0 +1,42 @@
+{{- with .Values.nginx }}
+{{- if .enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    app: nginx
+    {{- include "emart.labels" $ | nindent 4 }}
+spec:
+  replicas: {{ .replicas }}
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+      annotations:
+        # Roll pods when the nginx config changes
+        checksum/config: {{ include (print $.Template.BasePath "/nginx/configmap.yaml") $ | sha256sum }}
+    spec:
+      containers:
+      - name: nginx
+        image: {{ include "emart.image" .image }}
+        imagePullPolicy: {{ .image.pullPolicy }}
+        ports:
+        - containerPort: {{ .containerPort }}
+        volumeMounts:
+        - name: nginx-config
+          mountPath: /etc/nginx/conf.d
+        {{- with .resources }}
+        resources:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+      volumes:
+      - name: nginx-config
+        configMap:
+          name: {{ .configMapName }}
+{{- end }}
+{{- end }}

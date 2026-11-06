@@ -1,0 +1,18 @@
+{{- with .Values.client }}
+{{- if .enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .service.name }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    app: client
+    {{- include "emart.labels" $ | nindent 4 }}
+spec:
+  selector:
+    app: client
+  ports:
+  - port: {{ .service.port }}
+    targetPort: {{ .containerPort }}
+{{- end }}
+{{- end }}

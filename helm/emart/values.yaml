@@ -1,0 +1,95 @@
+# Common labels added to every resource's metadata (not to selectors)
+commonLabels: {}
+
+client:
+  enabled: true
+  replicas: 1
+  image:
+    repository: abroor/emart-client
+    tag: 7d33800e24a66f1604bf49bceea45b9b917befb5
+    pullPolicy: IfNotPresent
+  containerPort: 4200
+  service:
+    name: client
+    port: 4200
+  resources: {}
+
+javaapi:
+  enabled: true
+  replicas: 1
+  image:
+    repository: abroor/emart-javaapi
+    tag: 4aa2cd510c115275c9c12c08ba15418cab5076c0
+    pullPolicy: IfNotPresent
+  containerPort: 9000
+  service:
+    name: webapi
+    port: 9000
+  resources: {}
+
+nodeapi:
+  enabled: true
+  replicas: 1
+  image:
+    repository: abroor/emart-nodeapi
+    tag: 0613374fd7187571bcdc6df75eafa422bf750ab7
+    pullPolicy: IfNotPresent
+  containerPort: 5000
+  service:
+    name: api
+    port: 5000
+  resources: {}
+
+mongodb:
+  enabled: true
+  name: emongo
+  replicas: 1
+  image:
+    repository: mongo
+    tag: "4"
+    pullPolicy: IfNotPresent
+  containerPort: 27017
+  database: epoc
+  service:
+    port: 27017
+  resources: {}
+
+mysql:
+  enabled: true
+  name: emartdb
+  replicas: 1
+  image:
+    repository: mysql
+    tag: 8.0.33
+    pullPolicy: IfNotPresent
+  containerPort: 3306
+  database: books
+  service:
+    port: 3306
+  secret:
+    name: mysql-secret
+    # false: the chart expects an existing secret, created outside git:
+    #   kubectl create secret generic mysql-secret -n emart --from-literal=password=<password>
+    # true: the chart creates it; pass the value with --set mysql.secret.password=...
+    create: false
+  persistence:
+    claimName: mysql-pvc
+    storageClassName: gp2
+    accessMode: ReadWriteOnce
+    size: 5Gi
+  resources: {}
+
+nginx:
+  enabled: true
+  replicas: 1
+  image:
+    repository: nginx
+    tag: latest
+    pullPolicy: IfNotPresent
+  containerPort: 80
+  configMapName: nginx-config
+  service:
+    name: nginx
+    type: LoadBalancer
+    port: 80
+  resources: {}

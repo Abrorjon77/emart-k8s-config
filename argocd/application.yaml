@@ -8,9 +8,10 @@ spec:
   source:
     repoURL: https://github.com/Abrorjon77/emart-k8s-config
     targetRevision: main
-    path: .
-    directory:
-      recurse: true
+    path: helm/emart
+    helm:
+      valueFiles:
+        - values.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: emart
