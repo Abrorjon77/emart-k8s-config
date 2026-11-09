@@ -1,0 +1,42 @@
+{{- with .Values.ingress }}
+{{- if .enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .name }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    {{- include "emart.labels" $ | nindent 4 }}
+  {{- with .annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  ingressClassName: {{ .className }}
+  rules:
+  - http:
+      paths:
+      # Same routing the nginx pod did; most specific paths first
+      - path: /webapi
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $.Values.javaapi.service.name }}
+            port:
+              number: {{ $.Values.javaapi.service.port }}
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $.Values.nodeapi.service.name }}
+            port:
+              number: {{ $.Values.nodeapi.service.port }}
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $.Values.client.service.name }}
+            port:
+              number: {{ $.Values.client.service.port }}
+{{- end }}
+{{- end }}

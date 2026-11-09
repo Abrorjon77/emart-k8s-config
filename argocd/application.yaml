@@ -3,6 +3,9 @@ kind: Application
 metadata:
   name: emart-app
   namespace: argocd
+  # Deleting this Application also deletes its resources (pods, ALB, volumes)
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
   source:

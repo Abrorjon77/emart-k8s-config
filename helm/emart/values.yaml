@@ -79,8 +79,10 @@ mysql:
     size: 5Gi
   resources: {}
 
+# Replaced by the ALB Ingress below; set enabled: true (and ingress.enabled: false)
+# to go back to nginx behind a Classic Load Balancer.
 nginx:
-  enabled: true
+  enabled: false
   replicas: 1
   image:
     repository: nginx
@@ -93,3 +95,16 @@ nginx:
     type: LoadBalancer
     port: 80
   resources: {}
+
+# ALB created by the AWS Load Balancer Controller (installed by emart-eks-terraform)
+ingress:
+  enabled: true
+  name: emart
+  className: alb
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    # Send traffic straight to pod IPs (works with the Amazon VPC CNI)
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'
+    # Health checks hit "/" on every service; the APIs may answer 404 there
+    alb.ingress.kubernetes.io/success-codes: "200-499"
