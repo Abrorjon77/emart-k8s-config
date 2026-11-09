@@ -68,6 +68,15 @@ mysql:
     port: 3306
   secret:
     name: mysql-secret
+    # The password lives in AWS Secrets Manager (emart/mysql, created by
+    # emart-eks-terraform/bootstrap). External Secrets Operator copies it into
+    # the cluster as mysql-secret on every rebuild.
+    externalSecret:
+      enabled: true
+      remoteKey: emart/mysql
+      region: us-east-1
+      refreshInterval: 1h
+    # Only when externalSecret is disabled:
     # false: the chart expects an existing secret, created outside git:
     #   kubectl create secret generic mysql-secret -n emart --from-literal=password=<password>
     # true: the chart creates it; pass the value with --set mysql.secret.password=...
