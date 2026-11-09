@@ -19,7 +19,7 @@ javaapi:
   replicas: 1
   image:
     repository: abroor/emart-javaapi
-    tag: 4aa2cd510c115275c9c12c08ba15418cab5076c0
+    tag: 21e46e8e3c8bb944bdbe23e845c120ccf9e0a75a
     pullPolicy: IfNotPresent
   containerPort: 9000
   service:
