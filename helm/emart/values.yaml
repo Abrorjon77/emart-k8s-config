@@ -6,7 +6,7 @@ client:
   replicas: 1
   image:
     repository: abroor/emart-client
-    tag: 7d33800e24a66f1604bf49bceea45b9b917befb5
+    tag: 21e46e8e3c8bb944bdbe23e845c120ccf9e0a75a
     pullPolicy: IfNotPresent
   containerPort: 4200
   service:
