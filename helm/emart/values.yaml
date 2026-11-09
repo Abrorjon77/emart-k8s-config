@@ -101,10 +101,16 @@ ingress:
   enabled: true
   name: emart
   className: alb
+  # ExternalDNS creates these records in Route 53. Leave empty to serve on the
+  # ALB's own address over HTTP only (then also drop HTTPS from listen-ports).
+  hosts:
+    - registan.xyz
+    - www.registan.xyz
   annotations:
     alb.ingress.kubernetes.io/scheme: internet-facing
     # Send traffic straight to pod IPs (works with the Amazon VPC CNI)
     alb.ingress.kubernetes.io/target-type: ip
-    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/ssl-redirect: "443"
     # Health checks hit "/" on every service; the APIs may answer 404 there
     alb.ingress.kubernetes.io/success-codes: "200-499"

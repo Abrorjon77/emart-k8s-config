@@ -13,8 +13,16 @@ metadata:
   {{- end }}
 spec:
   ingressClassName: {{ .className }}
+  {{- with .hosts }}
+  # Hostnames let the controller find the matching ACM certificate on its own
+  tls:
+  - hosts:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   rules:
-  - http:
+  {{- range (default (list "") .hosts) }}
+  - {{- if . }} host: {{ . }}{{ end }}
+    http:
       paths:
       # Same routing the nginx pod did; most specific paths first
       - path: /webapi
@@ -38,5 +46,6 @@ spec:
             name: {{ $.Values.client.service.name }}
             port:
               number: {{ $.Values.client.service.port }}
+  {{- end }}
 {{- end }}
 {{- end }}
