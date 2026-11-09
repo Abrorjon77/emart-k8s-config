@@ -44,6 +44,11 @@ spec:
             existingSecret: grafana-admin
             userKey: admin-user
             passwordKey: admin-password
+          # Alertmanager is turned off above, so don't add it as a data source
+          sidecar:
+            datasources:
+              alertmanager:
+                enabled: false
           additionalDataSources:
           - name: Loki
             type: loki
