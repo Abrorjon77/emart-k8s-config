@@ -1,0 +1,126 @@
+# Prometheus (metrics) + Grafana (dashboards) + node and pod metrics.
+# Grafana: https://grafana.registan.xyz, login from AWS Secrets Manager (emart/grafana).
+# ServerSideApply: the Prometheus CRDs are too big for a normal apply.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kube-prometheus-stack
+  namespace: argocd
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://prometheus-community.github.io/helm-charts
+    chart: kube-prometheus-stack
+    targetRevision: 92.14.0
+    helm:
+      releaseName: kps
+      valuesObject:
+        kubeControllerManager:
+          enabled: false
+        kubeScheduler:
+          enabled: false
+        kubeEtcd:
+          enabled: false
+        kubeProxy:
+          enabled: false
+        alertmanager:
+          enabled: false
+        prometheus:
+          prometheusSpec:
+            retention: 2d
+            serviceMonitorSelectorNilUsesHelmValues: false
+            podMonitorSelectorNilUsesHelmValues: false
+            ruleSelectorNilUsesHelmValues: false
+            resources:
+              requests:
+                cpu: 200m
+                memory: 512Mi
+              limits:
+                memory: 1536Mi
+        grafana:
+          admin:
+            existingSecret: grafana-admin
+            userKey: admin-user
+            passwordKey: admin-password
+          additionalDataSources:
+          - name: Loki
+            type: loki
+            uid: loki
+            access: proxy
+            url: http://loki.monitoring.svc.cluster.local:3100
+          ingress:
+            enabled: true
+            ingressClassName: alb
+            annotations:
+              alb.ingress.kubernetes.io/scheme: internet-facing
+              alb.ingress.kubernetes.io/target-type: ip
+              alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+              alb.ingress.kubernetes.io/ssl-redirect: '443'
+              alb.ingress.kubernetes.io/group.name: emart
+              alb.ingress.kubernetes.io/healthcheck-path: "/api/health"
+            hosts:
+            - grafana.registan.xyz
+            path: "/"
+            pathType: Prefix
+            tls:
+            - hosts:
+              - grafana.registan.xyz
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 512Mi
+        extraManifests:
+        - apiVersion: external-secrets.io/v1
+          kind: SecretStore
+          metadata:
+            name: aws-secrets-manager
+          spec:
+            provider:
+              aws:
+                service: SecretsManager
+                region: us-east-1
+        - apiVersion: external-secrets.io/v1
+          kind: ExternalSecret
+          metadata:
+            name: grafana-admin
+          spec:
+            refreshInterval: 1h
+            secretStoreRef:
+              kind: SecretStore
+              name: aws-secrets-manager
+            target:
+              name: grafana-admin
+              creationPolicy: Owner
+            data:
+            - secretKey: admin-user
+              remoteRef:
+                key: emart/grafana
+                property: username
+            - secretKey: admin-password
+              remoteRef:
+                key: emart/grafana
+                property: password
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+    - ServerSideApply=true
+    - RespectIgnoreDifferences=true
+  ignoreDifferences:
+  - group: admissionregistration.k8s.io
+    kind: ValidatingWebhookConfiguration
+    jqPathExpressions:
+    - ".webhooks[]?.clientConfig.caBundle"
+  - group: admissionregistration.k8s.io
+    kind: MutatingWebhookConfiguration
+    jqPathExpressions:
+    - ".webhooks[]?.clientConfig.caBundle"

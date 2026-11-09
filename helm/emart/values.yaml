@@ -121,5 +121,7 @@ ingress:
     alb.ingress.kubernetes.io/target-type: ip
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
     alb.ingress.kubernetes.io/ssl-redirect: "443"
+    # One ALB shared with Grafana (same group name in argocd/monitoring)
+    alb.ingress.kubernetes.io/group.name: emart
     # Health checks hit "/" on every service; the APIs may answer 404 there
     alb.ingress.kubernetes.io/success-codes: "200-499"
