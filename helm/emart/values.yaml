@@ -32,7 +32,7 @@ nodeapi:
   replicas: 1
   image:
     repository: abroor/emart-nodeapi
-    tag: 0613374fd7187571bcdc6df75eafa422bf750ab7
+    tag: 21e46e8e3c8bb944bdbe23e845c120ccf9e0a75a
     pullPolicy: IfNotPresent
   containerPort: 5000
   service:
